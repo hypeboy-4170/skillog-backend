@@ -15,9 +15,9 @@ Resources:
     Properties:
       StageName: prod
       Cors:
-        AllowMethods: "'POST, OPTIONS'"
-        AllowHeaders: "'Content-Type,Authorization'"
-        AllowOrigin: "'*'"
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'https://allforone-freesite.com'"
 
   SkillogFunction:
     Type: AWS::Serverless::Function
@@ -41,7 +41,13 @@ Resources:
                 - ses:SendEmail
               Resource: '*'
       Events:
-        FastApiProxy:
+        ApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SkillogApi
+            Path: /
+            Method: ANY
+        ApiProxy:
           Type: Api
           Properties:
             RestApiId: !Ref SkillogApi
