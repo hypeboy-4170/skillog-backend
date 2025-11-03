@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Packaging Lambda functions"
+      - cd login && zip -r ../login.zip . && cd ..
+      - cd skills && zip -r ../skills.zip . && cd ..
+
+artifacts:
+  files:
+    - login.zip
+    - skills.zip

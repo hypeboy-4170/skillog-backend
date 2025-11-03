@@ -1,2 +1,1 @@
-# skillog-backend
-スキログバック用
+# skilllog-backend
