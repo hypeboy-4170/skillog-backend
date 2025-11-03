@@ -1,13 +1,21 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      python: 3.9
+  pre_build:
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt -t .
   build:
     commands:
-      - echo "Packaging Lambda functions"
-      - cd login && zip -r ../login.zip . && cd ..
-      - cd skills && zip -r ../skills.zip . && cd ..
+      - echo Build started on `date`
+      - echo Building Lambda deployment package...
+  post_build:
+    commands:
+      - echo Build completed on `date`
 
 artifacts:
   files:
-    - login.zip
-    - skills.zip
+    - '**/*'
