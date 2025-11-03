@@ -2,13 +2,14 @@ import boto3
 import hmac
 import hashlib
 import base64
+import os
 from botocore.exceptions import ClientError
 
 cognito_client = boto3.client('cognito-idp', region_name='ap-northeast-1')
 
 USER_POOL_ID = 'ap-northeast-1_WncgvrLUL'
 CLIENT_ID = '5ba0ae4io3vsdp5i574tfevo7a'
-CLIENT_SECRET = None  # 環境変数から取得するか、設定が必要
+CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 
 def get_secret_hash(username):
     if not CLIENT_SECRET:

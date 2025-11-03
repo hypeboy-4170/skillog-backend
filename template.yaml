@@ -8,6 +8,10 @@ Parameters:
   ClientId:
     Type: String
     Description: Cognito Client ID
+  ClientSecret:
+    Type: String
+    Description: Cognito Client Secret
+    NoEcho: true
 
 Resources:
   SkillogApi:
@@ -29,6 +33,7 @@ Resources:
         Variables:
           USER_POOL_ID: !Ref UserPoolId
           CLIENT_ID: !Ref ClientId
+          CLIENT_SECRET: !Ref ClientSecret
       Policies:
         - Version: '2012-10-17'
           Statement:

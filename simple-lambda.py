@@ -9,6 +9,7 @@ ses = boto3.client('ses', region_name='ap-northeast-1')
 
 USER_POOL_ID = os.environ.get('USER_POOL_ID', 'ap-northeast-1_WncgvrLUL')
 CLIENT_ID = os.environ.get('CLIENT_ID', '5ba0ae4io3vsdp5i574tfevo7a')
+CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '1cf7q4beajh4jjcqm04os3hkqbe7mbp6gdv46qrgd3esegrkj1hi')
 
 def lambda_handler(event, context):
     try:
@@ -51,6 +52,14 @@ def handle_register(event, headers):
     email = body['email']
     
     try:
+        import hmac
+        import hashlib
+        import base64
+        
+        # CLIENT_SECRET用のSECRET_HASHを計算
+        message = username + CLIENT_ID
+        secret_hash = base64.b64encode(hmac.new(CLIENT_SECRET.encode(), message.encode(), hashlib.sha256).digest()).decode()
+        
         cognito.admin_create_user(
             UserPoolId=USER_POOL_ID,
             Username=username,
@@ -81,19 +90,37 @@ def handle_login(event, headers):
     username = body['username']
     password = body['password']
     
+    print(f"Login attempt for user: {username}")
+    print(f"Using UserPool: {USER_POOL_ID}")
+    print(f"Using ClientId: {CLIENT_ID}")
+    
     try:
+        import hmac
+        import hashlib
+        import base64
+        
+        # CLIENT_SECRET用のSECRET_HASHを計算
+        message = username + CLIENT_ID
+        secret_hash = base64.b64encode(hmac.new(CLIENT_SECRET.encode(), message.encode(), hashlib.sha256).digest()).decode()
+        
         response = cognito.admin_initiate_auth(
             UserPoolId=USER_POOL_ID,
             ClientId=CLIENT_ID,
             AuthFlow='ADMIN_NO_SRP_AUTH',
-            AuthParameters={'USERNAME': username, 'PASSWORD': password}
+            AuthParameters={
+                'USERNAME': username, 
+                'PASSWORD': password,
+                'SECRET_HASH': secret_hash
+            }
         )
+        print("Login successful")
         return {
             'statusCode': 200,
             'headers': headers,
             'body': json.dumps({'access_token': response['AuthenticationResult']['AccessToken']})
         }
     except ClientError as e:
+        print(f"Login error: {str(e)}")
         return {
             'statusCode': 401,
             'headers': headers,
